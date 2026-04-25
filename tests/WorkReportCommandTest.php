@@ -10,12 +10,15 @@ use Igancev\WorkReporter\Destination\BatchDeliveryResult;
 use Igancev\WorkReporter\Destination\DeliveryFailure;
 use Igancev\WorkReporter\Destination\Destination;
 use Igancev\WorkReporter\Destination\DestinationException;
+use Igancev\WorkReporter\Destination\DestinationFactory;
 use Igancev\WorkReporter\Duration;
 use Igancev\WorkReporter\Source\SourceException;
 use Igancev\WorkReporter\Source\TimeEntriesSource;
+use Igancev\WorkReporter\Source\TimeEntriesSourceFactory;
 use Igancev\WorkReporter\TimeEntry;
 use Igancev\WorkReporter\WorkReportCommand;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,17 +26,27 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 #[CoversClass(WorkReportCommand::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class WorkReportCommandTest extends TestCase
 {
-    private TimeEntriesSource&MockObject $source;
-    private Destination&MockObject $destination;
+    /** @var TimeEntriesSource&MockObject */
+    private MockObject $source;
+    /** @var Destination&MockObject */
+    private MockObject $destination;
     private CommandTester $tester;
 
     protected function setUp(): void
     {
         $this->source = $this->createMock(TimeEntriesSource::class);
         $this->destination = $this->createMock(Destination::class);
-        $command = new WorkReportCommand($this->source, $this->destination);
+
+        $sourceFactory = $this->createStub(TimeEntriesSourceFactory::class);
+        $sourceFactory->method('build')->willReturn($this->source);
+
+        $destinationFactory = $this->createStub(DestinationFactory::class);
+        $destinationFactory->method('build')->willReturn($this->destination);
+
+        $command = new WorkReportCommand($sourceFactory, $destinationFactory);
         $this->tester = new CommandTester($command);
     }
 

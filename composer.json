@@ -17,7 +17,6 @@
     "require": {
         "php": "^8.4",
         "symfony/console": "^7.2",
-        "symfony/dotenv": "^7.2",
         "amphp/http-client": "^5.3"
     },
     "scripts": {

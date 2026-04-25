@@ -5,8 +5,10 @@ namespace Igancev\WorkReporter;
 use DateTimeImmutable;
 use Igancev\WorkReporter\Destination\Destination;
 use Igancev\WorkReporter\Destination\DestinationException;
+use Igancev\WorkReporter\Destination\DestinationFactory;
 use Igancev\WorkReporter\Source\SourceException;
 use Igancev\WorkReporter\Source\TimeEntriesSource;
+use Igancev\WorkReporter\Source\TimeEntriesSourceFactory;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -29,11 +31,16 @@ class WorkReportCommand extends Command
     private bool $isGrouped;
     private Duration $dailyGoal;
     private Duration $minDuration;
+    private readonly TimeEntriesSource $timeEntriesSource;
+    private readonly Destination $destination;
 
     public function __construct(
-        private readonly TimeEntriesSource $timeEntriesSource,
-        private readonly Destination $destination,
+        TimeEntriesSourceFactory $timeEntriesSourceFactory,
+        DestinationFactory $destinationFactory,
     ) {
+        $this->timeEntriesSource = $timeEntriesSourceFactory->build('super-productivity');
+        $this->destination = $destinationFactory->build('youtrack');
+
         parent::__construct();
     }
 

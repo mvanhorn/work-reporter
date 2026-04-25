@@ -8,19 +8,21 @@ use Igancev\WorkReporter\Source\SuperProductivity\Storage;
 use Igancev\WorkReporter\Source\SuperProductivity\Tag;
 use Igancev\WorkReporter\Source\SuperProductivity\Task;
 use Igancev\WorkReporter\Source\SuperProductivity\TaskFactory;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\MockObject\Stub;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(TaskFactory::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TaskFactoryTest extends TestCase
 {
-    private Storage&Stub $storage;
+    private Storage&MockObject $storage;
     private TaskFactory $factory;
 
     protected function setUp(): void
     {
-        $this->storage = $this->createStub(Storage::class);
+        $this->storage = $this->createMock(Storage::class);
         $this->factory = new TaskFactory($this->storage);
     }
 
@@ -37,7 +39,8 @@ final class TaskFactoryTest extends TestCase
             'parentId' => null,
         ];
 
-        $this->storage->method('getTaskById')
+        $this->storage->expects($this->once())
+            ->method('getTaskById')
             ->with($taskId)
             ->willReturn($rawTask);
 
@@ -70,11 +73,13 @@ final class TaskFactoryTest extends TestCase
 
         $tag = new Tag($tagId, 'Work');
 
-        $this->storage->method('getTaskById')
+        $this->storage->expects($this->once())
+            ->method('getTaskById')
             ->with($taskId)
             ->willReturn($rawTask);
 
-        $this->storage->method('getTagById')
+        $this->storage->expects($this->once())
+            ->method('getTagById')
             ->with($tagId)
             ->willReturn($tag);
 
@@ -105,7 +110,8 @@ final class TaskFactoryTest extends TestCase
             'title' => 'Parent Task',
         ];
 
-        $this->storage->method('getTaskById')
+        $this->storage->expects($this->any())
+            ->method('getTaskById')
             ->willReturnMap([
                 [$taskId, $rawSubtask],
                 [$parentId, $rawParent],
@@ -143,7 +149,8 @@ final class TaskFactoryTest extends TestCase
             'parentId' => $parentTaskId,
         ];
 
-        $this->storage->method('getTaskById')
+        $this->storage->expects($this->any())
+            ->method('getTaskById')
             ->willReturnMap([
                 [$parentTaskId, $rawParent],
                 [$subTaskId, $rawSubTask],

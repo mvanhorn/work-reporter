@@ -3,6 +3,7 @@
 namespace Igancev\WorkReporter;
 
 use DateTimeImmutable;
+use Igancev\WorkReporter\Config\ConfigProvider;
 use Igancev\WorkReporter\Destination\Destination;
 use Igancev\WorkReporter\Destination\DestinationException;
 use Igancev\WorkReporter\Destination\DestinationFactory;
@@ -39,9 +40,10 @@ class WorkReportCommand extends Command
     public function __construct(
         TimeEntriesSourceFactory $timeEntriesSourceFactory,
         DestinationFactory $destinationFactory,
+        ConfigProvider $configProvider,
     ) {
-        $this->timeEntriesSource = $timeEntriesSourceFactory->build(SourceType::SuperProductivity);
-        $this->destination = $destinationFactory->build(DestinationType::YouTrack);
+        $this->timeEntriesSource = $timeEntriesSourceFactory->build($configProvider->get()->source);
+        $this->destination = $destinationFactory->build($configProvider->get()->destination);
 
         parent::__construct();
     }

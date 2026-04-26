@@ -6,13 +6,19 @@ namespace Tests;
 
 use DateTimeImmutable;
 use Exception;
+use Igancev\WorkReporter\Config\Config;
+use Igancev\WorkReporter\Config\ConfigProvider;
+use Igancev\WorkReporter\Config\DestinationConfig\DestinationsConfig;
+use Igancev\WorkReporter\Config\SourceConfig\SourcesConfig;
 use Igancev\WorkReporter\Destination\BatchDeliveryResult;
 use Igancev\WorkReporter\Destination\DeliveryFailure;
 use Igancev\WorkReporter\Destination\Destination;
 use Igancev\WorkReporter\Destination\DestinationException;
 use Igancev\WorkReporter\Destination\DestinationFactory;
+use Igancev\WorkReporter\Destination\DestinationType;
 use Igancev\WorkReporter\Duration;
 use Igancev\WorkReporter\Source\SourceException;
+use Igancev\WorkReporter\Source\SourceType;
 use Igancev\WorkReporter\Source\TimeEntriesSource;
 use Igancev\WorkReporter\Source\TimeEntriesSourceFactory;
 use Igancev\WorkReporter\TimeEntry;
@@ -46,7 +52,16 @@ final class WorkReportCommandTest extends TestCase
         $destinationFactory = $this->createStub(DestinationFactory::class);
         $destinationFactory->method('build')->willReturn($this->destination);
 
-        $command = new WorkReportCommand($sourceFactory, $destinationFactory);
+        $config = new Config(
+            SourceType::PlainJson,
+            DestinationType::YouTrack,
+            new SourcesConfig(),
+            new DestinationsConfig(),
+        );
+        $configProvider = $this->createStub(ConfigProvider::class);
+        $configProvider->method('get')->willReturn($config);
+
+        $command = new WorkReportCommand($sourceFactory, $destinationFactory, $configProvider);
         $this->tester = new CommandTester($command);
     }
 

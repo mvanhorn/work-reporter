@@ -8,11 +8,17 @@ use Amp\Http\Client\Connection\DefaultConnectionFactory;
 use Amp\Http\Client\Connection\UnlimitedConnectionPool;
 use Amp\Http\Client\HttpClientBuilder;
 use Amp\Socket\DnsSocketConnector;
+use Igancev\WorkReporter\Config\ConfigProvider;
 use Igancev\WorkReporter\Destination\YouTrack\YouTrackDestination;
-use InvalidArgumentException;
+use RuntimeException;
 
 final readonly class ConcreteDestinationFactory implements DestinationFactory
 {
+    public function __construct(
+        private ConfigProvider $configProvider,
+    ) {
+    }
+
     public function build(DestinationType $destination): Destination
     {
         return match ($destination) {
@@ -22,9 +28,10 @@ final readonly class ConcreteDestinationFactory implements DestinationFactory
 
     private function buildYouTrackDestination(): YouTrackDestination
     {
-        // todo: load from config
-        $youtrackUrl = 'http://localhost:8080';
-        $youtrackToken = 'perm-tmpHardcodeToken';
+        $config = $this->configProvider->get()->destinations->youTrack;
+        if ($config === null) {
+            throw new RuntimeException("YouTrack destination configuration is missing");
+        }
 
         return new YouTrackDestination(
             new HttpClientBuilder()
@@ -32,8 +39,8 @@ final readonly class ConcreteDestinationFactory implements DestinationFactory
                     new UnlimitedConnectionPool(new DefaultConnectionFactory(new DnsSocketConnector()))
                 )
                 ->build(),
-            $youtrackUrl,
-            $youtrackToken,
+            $config->url,
+            $config->token,
         );
     }
 }

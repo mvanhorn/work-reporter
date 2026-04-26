@@ -3,15 +3,18 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Igancev\WorkReporter\Config\YamlConfigProvider;
 use Igancev\WorkReporter\Destination\ConcreteDestinationFactory;
 use Igancev\WorkReporter\Source\ConcreteSourceFactory;
 use Igancev\WorkReporter\WorkReportCommand;
 use Symfony\Component\Console\Application;
 
-// todo: move to DI container
+$configProvider = new YamlConfigProvider();
+
 $workReportCommand = new WorkReportCommand(
-    new ConcreteSourceFactory(),
-    new ConcreteDestinationFactory(),
+    new ConcreteSourceFactory($configProvider),
+    new ConcreteDestinationFactory($configProvider),
+    $configProvider,
 );
 
 $application = new Application();

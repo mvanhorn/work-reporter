@@ -34,17 +34,13 @@ class WorkReportCommand extends Command
     private bool $isGrouped;
     private Duration $dailyGoal;
     private Duration $minDuration;
-    private readonly TimeEntriesSource $timeEntriesSource;
-    private readonly Destination $destination;
+    private Destination $destination;
 
     public function __construct(
-        TimeEntriesSourceFactory $timeEntriesSourceFactory,
-        DestinationFactory $destinationFactory,
-        ConfigProvider $configProvider,
+        private readonly TimeEntriesSourceFactory $timeEntriesSourceFactory,
+        private readonly DestinationFactory $destinationFactory,
+        private readonly ConfigProvider $configProvider,
     ) {
-        $this->timeEntriesSource = $timeEntriesSourceFactory->build($configProvider->get()->source);
-        $this->destination = $destinationFactory->build($configProvider->get()->destination);
-
         parent::__construct();
     }
 
@@ -105,8 +101,11 @@ class WorkReportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $timeEntriesSource = $this->timeEntriesSourceFactory->build($this->configProvider->get()->source);
+        $this->destination = $this->destinationFactory->build($this->configProvider->get()->destination);
+
         try {
-            $timeEntries = $this->timeEntriesSource->fetchTimeEntries($this->from, $this->to);
+            $timeEntries = $timeEntriesSource->fetchTimeEntries($this->from, $this->to);
         } catch (SourceException $e) {
             $this->io->error($e->getMessage());
             return Command::FAILURE;

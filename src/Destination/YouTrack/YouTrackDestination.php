@@ -136,7 +136,7 @@ final class YouTrackDestination implements Destination
             foreach ($responses as $response) {
                 $body = $response->getBody()->buffer();
 
-                // todo: сделать обработку ошибок
+                // todo: make error catch: 404 etc.
                 if ($response->getStatus() >= 400) {
                     throw new DestinationException('Failed to fetch projects from destination', [
                         'httpStatusCode' => $response->getStatus(),

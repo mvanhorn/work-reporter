@@ -24,7 +24,8 @@
         "cs": "vendor/bin/phpcs -p",
         "cs-fix": "vendor/bin/phpcbf",
         "stat-analyze": "vendor/bin/phpstan analyse --memory-limit=512M",
-        "unit": "vendor/bin/phpunit"
+        "unit": "vendor/bin/phpunit",
+        "functional": "vendor/bin/phpunit --group functional"
     },
     "autoload": {
         "psr-4": {
@@ -45,6 +46,8 @@
         "symfony/var-dumper": "^8.0",
         "phpunit/phpunit": "^12.5",
         "squizlabs/php_codesniffer": "^4.0",
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "testcontainers/testcontainers": "^1.0",
+        "symfony/http-client": "^8.0"
     }
 }

@@ -1,16 +1,8 @@
 services:
     youtrack:
-        image: jetbrains/youtrack:2025.3.124603
-#        volumes:
-#            - yt_data:/opt/youtrack/data
-#            - conf:/opt/youtrack/conf
-#            - logs:/opt/youtrack/logs
-#            - backups:/opt/youtrack/backups
+        image: jetbrains/youtrack:2026.1.12848
+        volumes:
+            - ./tests/data/youtrack/2026-1-12848/data:/opt/youtrack/data
+            - ./tests/data/youtrack/2026-1-12848/conf:/opt/youtrack/conf
         ports:
             - '8080:8080'
-
-#volumes:
-#    yt_data:
-#    conf:
-#    logs:
-#    backups:

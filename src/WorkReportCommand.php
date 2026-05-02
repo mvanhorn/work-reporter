@@ -3,10 +3,15 @@
 namespace Igancev\WorkReporter;
 
 use DateTimeImmutable;
+use Igancev\WorkReporter\Config\ConfigProvider;
 use Igancev\WorkReporter\Destination\Destination;
 use Igancev\WorkReporter\Destination\DestinationException;
+use Igancev\WorkReporter\Destination\DestinationFactory;
+use Igancev\WorkReporter\Destination\DestinationType;
+use Igancev\WorkReporter\Source\SourceType;
 use Igancev\WorkReporter\Source\SourceException;
 use Igancev\WorkReporter\Source\TimeEntriesSource;
+use Igancev\WorkReporter\Source\TimeEntriesSourceFactory;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -29,10 +34,12 @@ class WorkReportCommand extends Command
     private bool $isGrouped;
     private Duration $dailyGoal;
     private Duration $minDuration;
+    private Destination $destination;
 
     public function __construct(
-        private readonly TimeEntriesSource $timeEntriesSource,
-        private readonly Destination $destination,
+        private readonly TimeEntriesSourceFactory $timeEntriesSourceFactory,
+        private readonly DestinationFactory $destinationFactory,
+        private readonly ConfigProvider $configProvider,
     ) {
         parent::__construct();
     }
@@ -94,8 +101,11 @@ class WorkReportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $timeEntriesSource = $this->timeEntriesSourceFactory->build($this->configProvider->get()->source);
+        $this->destination = $this->destinationFactory->build($this->configProvider->get()->destination);
+
         try {
-            $timeEntries = $this->timeEntriesSource->fetchTimeEntries($this->from, $this->to);
+            $timeEntries = $timeEntriesSource->fetchTimeEntries($this->from, $this->to);
         } catch (SourceException $e) {
             $this->io->error($e->getMessage());
             return Command::FAILURE;

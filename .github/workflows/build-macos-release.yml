@@ -28,8 +28,8 @@ jobs:
 
       - name: Build micro.sfx
         run: |
-          ./spc download --with-php=8.4 --for-extensions="ctype,curl,dom,filter,libxml,mbstring,phar,simplexml,sockets,tokenizer,xml"
-          ./spc build "ctype,curl,dom,filter,libxml,mbstring,phar,simplexml,sockets,tokenizer,xml" --build-micro
+          ./spc download --with-php=8.4 --for-extensions="ctype,curl,dom,filter,libxml,mbstring,openssl,phar,simplexml,sockets,tokenizer,xml"
+          ./spc build "ctype,curl,dom,filter,libxml,mbstring,openssl,phar,simplexml,sockets,tokenizer,xml" --build-micro
 
       - name: Build PHAR
         run: box compile

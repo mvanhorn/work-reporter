@@ -3,6 +3,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build-macos:
     runs-on: macos-14
@@ -22,7 +25,7 @@ jobs:
 
       - name: Download and setup SPC
         run: |
-          curl -L https://github.com/crazywhalecc/static-php-cli/releases/latest/download/spc-macos-arm64.tar.gz -o spc.tar.gz
+          curl -L https://github.com/crazywhalecc/static-php-cli/releases/latest/download/spc-macos-aarch64.tar.gz -o spc.tar.gz
           tar -xzf spc.tar.gz
           chmod +x spc
 

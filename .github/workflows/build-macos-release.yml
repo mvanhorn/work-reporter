@@ -3,6 +3,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build-macos:
     runs-on: macos-14
@@ -22,14 +25,14 @@ jobs:
 
       - name: Download and setup SPC
         run: |
-          curl -L https://github.com/crazywhalecc/static-php-cli/releases/latest/download/spc-macos-arm64.tar.gz -o spc.tar.gz
+          curl -L https://github.com/crazywhalecc/static-php-cli/releases/latest/download/spc-macos-aarch64.tar.gz -o spc.tar.gz
           tar -xzf spc.tar.gz
           chmod +x spc
 
       - name: Build micro.sfx
         run: |
-          ./spc download --with-php=8.4 --for-extensions="ctype,curl,dom,filter,libxml,mbstring,phar,simplexml,sockets,tokenizer,xml"
-          ./spc build "ctype,curl,dom,filter,libxml,mbstring,phar,simplexml,sockets,tokenizer,xml" --build-micro
+          ./spc download --with-php=8.4 --for-extensions="ctype,curl,dom,filter,libxml,mbstring,openssl,phar,simplexml,sockets,tokenizer,xml"
+          ./spc build "ctype,curl,dom,filter,libxml,mbstring,openssl,phar,simplexml,sockets,tokenizer,xml" --build-micro
 
       - name: Build PHAR
         run: box compile
